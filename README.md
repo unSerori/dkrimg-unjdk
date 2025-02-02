@@ -9,8 +9,8 @@ GitHub ActionsとかDockerHubとかおさわりしたかった
 
 ユーザー名: unserori
 リポジトリ名: unjdk
-イメージ名: openjdk-${jdk_version}-${jdk | jre}-${base_image}
-タグ: v20250127 OR latest
+イメージ名: unjdk （リポジトリ名+タグかも？）
+タグ: openjdk-${jdk_version}-${jdk | jre}-${base_image} OR latest
 
 例: unjdk/openjdk-21-jre-bookworm-slim:v20250127
 

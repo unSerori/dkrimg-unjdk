@@ -9,13 +9,9 @@ cd "$sh_dir" || {
     exit 1
 }
 source ./init.sh
-echo "[$JAVA_21_BOOT_JDK]"
-
-# 日付
-date=$(date +"%Y%m%d")
 
 # ビルド
-docker build -f ../Dockerfile --force-rm=true --no-cache=true -t openjdk-21-jre-bookworm-slim:v${date} \
+docker build -f ../Dockerfile --force-rm=true --no-cache=true -t unjdk:openjdk-21-jre-bookworm-slim \
   --build-arg JAVA_21_BOOT_JDK=${JAVA_21_BOOT_JDK} \
   --build-arg JAVA_21_SOURCE_TAG=${JAVA_21_SOURCE_TAG} \
   .
