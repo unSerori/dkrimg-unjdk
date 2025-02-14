@@ -70,7 +70,7 @@ RUN \
     --no-header-files \
     --compress=2 \
     --output ./build/${build_conf_name}/images/jre/ \
-    fi
+    ;fi
 
 # デプロイ用のステージ
 
