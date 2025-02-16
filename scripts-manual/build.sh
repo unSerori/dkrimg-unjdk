@@ -15,3 +15,14 @@ docker build -f ../Dockerfile --force-rm=true --no-cache=true -t unjdk:openjdk-2
   --build-arg JAVA_21_BOOT_JDK=${JAVA_21_BOOT_JDK} \
   --build-arg JAVA_21_SOURCE_TAG=${JAVA_21_SOURCE_TAG} \
   .
+
+# dockerの使用容量を確認
+docker system df
+# 未使用のイメージを確認なしで削除
+docker image prune -y
+# 未使用のコンテナを削除
+docker container prune -f
+# 未使用のボリュームを削除
+docker volume prune -f
+# キャッシュを削除
+docker builder prune -f
