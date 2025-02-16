@@ -17,6 +17,9 @@ mapfile -t dirs < <( # 各行を要素として改行を削除して変数に保
 # s|A|B|で置換、^は先頭、$は末尾、[]内で^を使うと否定、[]は文字クラスで中身に指定した文字のどれか一文字を表す # つまり、/の後に任意の/以外の1文字が0回以上マッチするものが末尾にあるかどうか
 # .*は任意の文字が0回以上（:*）続くパターン
 
+# Dockerにログイン
+if [ -n "$1" ]; then docker login -u unserori -p $1; fi
+
 for dir in "${dirs[@]}"; do
   # 確認
   echo for_dir_dirs########
@@ -62,10 +65,12 @@ for dir in "${dirs[@]}"; do
 
     # プッシュ
     docker tag ${image}:${tag} ${user}/${image}:${tag} # タグをつける docker tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]
-    if [ -n "$1" ]; then docker login -u unserori -p $1; fi # ログイン
     docker push ${user}/${image}:${tag} # プッシュ
 
     echo
   done
   echo
 done
+
+# Dockerからログアウト
+if [ -n "$1" ]; then docker logout; fi
