@@ -9,17 +9,17 @@ cd "$sh_dir" || {
     exit 1
 }
 source ./init.sh
+echo $ARGS
 
 # ビルド
-docker build -f ../Dockerfile --force-rm=true --no-cache=true -t unjdk:openjdk-21-jre-bookworm-slim \
-  --build-arg JAVA_21_BOOT_JDK=${JAVA_21_BOOT_JDK} \
-  --build-arg JAVA_21_SOURCE_TAG=${JAVA_21_SOURCE_TAG} \
-  .
+docker build -f "$1" --force-rm=true --no-cache=true -t unjdk:openjdk-N-manual \
+  ${ARGS} \
+.
 
 # dockerの使用容量を確認
 docker system df
 # 未使用のイメージを確認なしで削除
-docker image prune -y
+docker image prune -f
 # 未使用のコンテナを削除
 docker container prune -f
 # 未使用のボリュームを削除

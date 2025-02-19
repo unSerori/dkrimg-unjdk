@@ -11,10 +11,10 @@ cd "$sh_dir" || {
 source ./init.sh
 
 # タグをつける docker tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]
-docker tag unjdk:openjdk-21-jre-bookworm-slim unserori/unjdk:openjdk-21-jre-bookworm-slim
+docker tag unjdk:openjdk-N-manual unserori/unjdk:openjdk-N-manual
 
 # ログイン
-docker login
+docker login -u unserori -p $1
 
 # プッシュ
-docker push unserori/unjdk:openjdk-21-jre-bookworm-slim
+docker push unserori/unjdk:openjdk-N-manual
