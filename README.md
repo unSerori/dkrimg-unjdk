@@ -13,8 +13,15 @@ mainにpushするとGitHubActionsが処理し、DockerHubにイメージがア�
 ### 手動ビルド
 
 1. `scripts-manual`内の`.env.build-args`を記述
-2. `bash ./scripts-manual/build.sh "<スクリプトのCDからDockerfileへの相対パス>"`でビルド
-3. `bash ./scripts-manual/push.sh "<Dockerのパスワード>"`でプッシュ
+2. ビルドとプッシュを以下コマンド
+
+```bash
+# build
+bash ./scripts-manual/build.sh "<スクリプトのCDからDockerfileへの相対パス>"
+# push
+bash ./scripts-manual/push.sh "<Dockerのパスワード>"
+```
+
 
 ## めも
 
