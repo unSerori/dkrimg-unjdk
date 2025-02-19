@@ -1,6 +1,3 @@
-# グローバルスコープ
-ARG JAVA_BOOT_JDK
-
 # 開発用やビルド用の共通ステージ
 
 # Stage0: 軽量debian
@@ -15,11 +12,10 @@ RUN \
 # ビルド用のステージ
 
 # Stage1: java（:bootJDK）の入ったイメージ
-FROM ${JAVA_BOOT_JDK:-eclipse-temurin:latest} AS build-stage
+FROM eclipse-temurin:20.0.2_9-jdk AS build-stage
 
 # composeから変数を受け取る
 ARG ARTIFACT_PATH=jdk
-ARG JAVA_SOURCE_TAG
 
 # 作業ディレクトリの設定
 WORKDIR /usr/build/
@@ -49,7 +45,7 @@ RUN \
     # libffi
     libffi-dev \
     # ソースのdl
-    && git clone --depth 1 -b ${JAVA_SOURCE_TAG} https://github.com/openjdk/jdk.git \
+    && git clone --depth 1 -b jdk-21-ga https://github.com/openjdk/jdk.git \
     # ビルド
     && cd ./jdk/ \
     && build_conf_name=linux-architecture-server-release \
@@ -88,4 +84,3 @@ ENV JAVA_HOME=/opt/java/unjdk
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 CMD [ "java", "--version" ]
-#
