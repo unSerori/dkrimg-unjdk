@@ -13,4 +13,6 @@ jobs:
       - name: Clone repository
         run: git clone https://github.com/unSerori/dkrimg-unjdk # actions/checkout@v2だと全ファイルが新規作成扱いされてしまうっぽい
       - name: Build Images and Push
-        run: bash dkrimg-unjdk/scripts-auto/build-and-push.sh ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          set -x
+          bash dkrimg-unjdk/scripts-auto/build-and-push.sh ${{ secrets.DOCKER_PASSWORD }}
