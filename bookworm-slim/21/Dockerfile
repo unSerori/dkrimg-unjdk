@@ -88,3 +88,4 @@ ENV JAVA_HOME=/opt/java/unjdk
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 CMD [ "java", "--version" ]
+#
