@@ -7,6 +7,11 @@ cd "$sh_dir" || {
     exit 1
 }
 
+# メイン処理
+
+# Dockerにログイン
+if [ -n "$1" ]; then docker login -u unserori -p $1; fi
+
 # 変更点のあったファイルのディレクトリを配列で確保
 mapfile -t dirs < <( # 各行を要素として改行を削除して変数に保存、プロセス置換でコマンド結果を仮想ファイルとしてmapfileコマンドに渡している
   git diff-tree --name-only --no-commit-id -r HEAD~1 HEAD | \
@@ -17,38 +22,37 @@ mapfile -t dirs < <( # 各行を要素として改行を削除して変数に保
 # s|A|B|で置換、^は先頭、$は末尾、[]内で^を使うと否定、[]は文字クラスで中身に指定した文字のどれか一文字を表す # つまり、/の後に任意の/以外の1文字が0回以上マッチするものが末尾にあるかどうか
 # .*は任意の文字が0回以上（:*）続くパターン
 
-# Dockerにログイン
-if [ -n "$1" ]; then docker login -u unserori -p $1; fi
-
+# 変更のあるファイルのディレクトリを一括処理
 for dir in "${dirs[@]}"; do
   # 確認
   echo for_dir_dirs########
   echo "\$dir: ${dir}"
 
   # Dockerfileを含むディレクトリ（:ビルドコンテキストディレクトリ）のみを対象とするために、ディレクトリでないまたはディレクトリ内にDockerfileを含まないならこんて
-  if ! find "../$dir" -maxdepth 1 -type f -name "Dockerfile*" | grep -q . ; then continue; fi
+  if ! find "../$dir" -maxdepth 1 -type f -name "build-args-*.sh" | grep -q . ; then continue; fi
 
-  # ディレクトリ内のすべてのDockerfile*を対象に処理
-  for dkrf in "../${dir}Dockerfile"*; do
+  # ディレクトリ内のすべてのbuild-args-*を対象に処理
+  for build_args_f in "../${dir}build-args-"*".sh"; do
     # 確認
-    echo for_dkrf_{dir}Dockerfile.*########
-    echo "\$dkrf: ${dkrf}"
+    echo for_build_args_f_{dir}build-args-*.sh########
+    echo "\$build_args_f: ${build_args_f}"
 
     # タグ名のためにビルド情報を集める
-    jdk_version="$(basename "$(dirname "$(dirname "${dkrf}")")")" # 二つ上のディレクトリを取得し、basenameでディレクトリ名のみ取得する
-    if [[ "$(basename "${dkrf}")" == *.* ]];then jdk_or_jre="-${dkrf##*.}";fi # 拡張子があるなら取得
-    base_image="$(basename "$(dirname "${dkrf}")")" # 一つ上のディレクトリを取得し、basenameでディレクトリ名のみ取得する
+    jdk_version="$(basename "$(dirname "${build_args_f}")")" # 1つ上のディレクトリを取得し、basenameでディレクトリ名のみ取得する
+    build_args_f_without_ext=$(basename "${build_args_f%.*}") # 拡張子を除外し、パスからファイル名を抜き出す
+    custom="${build_args_f_without_ext#build-args}" # カスタム文字列のみ取得
+    base_image="$(basename "$(dirname "$(dirname "${build_args_f}")")")" # 2つ上のディレクトリを取得し、basenameでディレクトリ名のみ取得する
     # log
     echo build_info########
     echo "\$jdk_version: ${jdk_version}"
-    echo "\$jdk_or_jre: ${jdk_or_jre}"
+    echo "\$custom: ${custom}"
     echo "\$base_image: ${base_image}"
 
     # ビルドのための値を設定
     user="unserori"
     repository="unjdk"
     image="unjdk" # リポジトリ名と一致させる
-    tag="openjdk-${jdk_version}${jdk_or_jre}-${base_image}"
+    tag="openjdk-${jdk_version}${custom}-${base_image}"
     # log
     echo build_val########
     echo "\$user: ${user}"
@@ -57,10 +61,10 @@ for dir in "${dirs[@]}"; do
     echo "\$tag: ${tag}"
 
     # ビルド
-    docker build -f "${dkrf}" --force-rm=true --no-cache=true -t ${image}:${tag} \
-    --build-arg ARTIFACT_PATH=jre \
-    --build-arg JAVA_21_BOOT_JDK=eclipse-temurin:20.0.2_9-jdk \
-    --build-arg JAVA_21_SOURCE_TAG=jdk-21-ga \
+    source $build_args_f
+    echo ${args}
+    docker build -f "../${dir}Dockerfile" --force-rm=true --no-cache=true -t ${image}:${tag} \
+     ${args} \
     .
 
     # プッシュ

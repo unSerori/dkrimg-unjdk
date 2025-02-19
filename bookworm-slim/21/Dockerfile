@@ -1,5 +1,5 @@
 # グローバルスコープ
-ARG JAVA_21_BOOT_JDK
+ARG JAVA_BOOT_JDK
 
 # 開発用やビルド用の共通ステージ
 
@@ -15,11 +15,11 @@ RUN \
 # ビルド用のステージ
 
 # Stage1: java（:bootJDK）の入ったイメージ
-FROM ${JAVA_21_BOOT_JDK:-eclipse-temurin:latest} AS build-stage
+FROM ${JAVA_BOOT_JDK:-eclipse-temurin:latest} AS build-stage
 
 # composeから変数を受け取る
 ARG ARTIFACT_PATH=jdk
-ARG JAVA_21_SOURCE_TAG
+ARG JAVA_SOURCE_TAG
 
 # 作業ディレクトリの設定
 WORKDIR /usr/build/
@@ -49,7 +49,7 @@ RUN \
     # libffi
     libffi-dev \
     # ソースのdl
-    && git clone --depth 1 -b ${JAVA_21_SOURCE_TAG} https://github.com/openjdk/jdk.git \
+    && git clone --depth 1 -b ${JAVA_SOURCE_TAG} https://github.com/openjdk/jdk.git \
     # ビルド
     && cd ./jdk/ \
     && build_conf_name=linux-architecture-server-release \
